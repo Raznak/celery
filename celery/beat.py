@@ -9,6 +9,7 @@ import os
 import time
 import shelve
 import sys
+import datetime
 import traceback
 
 from collections import namedtuple
@@ -340,6 +341,9 @@ class Scheduler(object):
 
         try:
             if task:
+                for i in range(len(entry.args)):
+                    entry.args[i]['time_sent'] = datetime.datetime.now()
+
                 return task.apply_async(entry.args, entry.kwargs,
                                         producer=producer,
                                         **entry.options)
