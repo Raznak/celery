@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """Memcached and in-memory cache result backend."""
 from __future__ import absolute_import, unicode_literals
+
 import sys
+
 from kombu.utils.encoding import bytes_to_str, ensure_bytes
 from kombu.utils.objects import cached_property
+
 from celery.exceptions import ImproperlyConfigured
 from celery.utils.functional import LRUCache
+
 from .base import KeyValueStoreBackend
 
 __all__ = ('CacheBackend',)
@@ -128,10 +132,11 @@ class CacheBackend(KeyValueStoreBackend):
     def delete(self, key):
         return self.client.delete(key)
 
-    def _apply_chord_incr(self, header, partial_args, group_id, body, **opts):
-        self.client.set(self.get_key_for_chord(group_id), 0, time=self.expires)
+    def _apply_chord_incr(self, header_result, body, **kwargs):
+        chord_key = self.get_key_for_chord(header_result.id)
+        self.client.set(chord_key, 0, time=self.expires)
         return super(CacheBackend, self)._apply_chord_incr(
-            header, partial_args, group_id, body, **opts)
+            header_result, body, **kwargs)
 
     def incr(self, key):
         return self.client.incr(key)
