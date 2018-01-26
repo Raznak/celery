@@ -341,9 +341,6 @@ class Scheduler(object):
 
         try:
             if task:
-                for i in range(len(entry.args)):
-                    entry.args[i]['date_ref'] = datetime.datetime.now()
-
                 return task.apply_async(entry.args, entry.kwargs,
                                         producer=producer,
                                         **entry.options)
